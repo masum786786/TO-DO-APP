@@ -3,6 +3,7 @@ import "./Navbar.css";
 
 const NavbarCustom = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false);
 
   return (
     <nav className="navbar">
@@ -26,8 +27,29 @@ const NavbarCustom = () => {
           <ul className="navbar-links">
             <li><a href="#action1">Home</a></li>
             <li><a href="#action2">About</a></li>
-            <li><a href="#action3">Services</a></li>
-            <li><a href="#action4">Other Project</a></li>
+
+            {/* Projects Dropdown */}
+            <li
+              className="dropdown"
+              onMouseEnter={() => setIsProjectsOpen(true)}
+              onMouseLeave={() => setIsProjectsOpen(false)}
+            >
+              <button
+                className="dropdown-toggle"
+                onClick={() => setIsProjectsOpen(!isProjectsOpen)}
+              >
+                Projects ▼
+              </button>
+              {isProjectsOpen && (
+                <ul className="dropdown-menu">
+                  <li><a href="/">Customer rating</a></li>
+                  <li><a href=" #">eState</a></li>
+                  <li><a href="#project3x"></a></li>
+                </ul>
+              )}
+            </li>
+
+            <li><a href="#action4">Contact</a></li>
           </ul>
         </div>
       </div>

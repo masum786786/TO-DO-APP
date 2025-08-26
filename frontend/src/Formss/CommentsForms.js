@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 
 const CommentsForm = ({ addNewComments }) => {
-  // Manual validation without Yup
   const validate = (values) => {
     const errors = {};
 
