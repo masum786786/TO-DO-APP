@@ -3,16 +3,13 @@ import "./CommentsForm.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const CommentsForm = ({ addNewComments }) => {
+  const { user, isAuthenticated, isLoading } = useAuth0();
+
   const validate = (values) => {
     const errors = {};
-
-    if (!values.username.trim()) {
-      errors.username = "Username is required";
-    } else if (values.username.trim().length < 3) {
-      errors.username = "Username must be at least 3 characters";
-    }
 
     if (!values.rating) {
       errors.rating = "Please select a rating";
@@ -29,14 +26,19 @@ const CommentsForm = ({ addNewComments }) => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      username: "", // will be auto-filled for logged-in user
       remarks: "",
       rating: "",
     },
     validate,
     onSubmit: (values, { resetForm }) => {
-      addNewComments(values);
-      toast.success("Added Feedback successfully!", {
+      const commentData = {
+        ...values,
+        username: user.name || user.email || "@guest", // ✅ dynamic username
+      };
+
+      addNewComments(commentData);
+      toast.success("Feedback added successfully!", {
         position: "top-center",
         autoClose: 2000,
       });
@@ -44,23 +46,26 @@ const CommentsForm = ({ addNewComments }) => {
     },
   });
 
+  if (isLoading) return <div>Loading...</div>;
+  if (!isAuthenticated)
+    return (
+      <div className="comments-login-message">
+        <p>Please log in to leave a comment.</p>
+      </div>
+    );
+
   return (
     <div className="comments-container">
       <h2>Leave a Comment</h2>
       <form className="comments-form" onSubmit={formik.handleSubmit}>
-        {/* Username */}
+        {/* ✅ Username (auto-filled and disabled) */}
         <label>Username</label>
         <input
           type="text"
           name="username"
-          placeholder="Enter your name"
-          value={formik.values.username}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          value={user.name || user.email}
+          disabled
         />
-        {formik.touched.username && formik.errors.username && (
-          <div className="error">{formik.errors.username}</div>
-        )}
 
         {/* Rating */}
         <label>Rating</label>
